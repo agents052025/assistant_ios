@@ -49,3 +49,104 @@ import Foundation
      return true
  }
 */ 
+
+// MARK: - App Configuration
+struct AppConfiguration {
+    
+    // MARK: - API Configuration
+    struct API {
+        // Backend configuration
+        static let backendURL = "https://mobile.labai.ws"
+        static let localBackendURL = "http://localhost:8000"
+        static let apiKey = "supersecretapikey"
+        
+        // ElevenLabs configuration
+        static let elevenLabsAPIKey = "YOUR_ELEVENLABS_API_KEY" // Replace with your actual key
+        static let elevenLabsBaseURL = "https://api.elevenlabs.io/v1"
+        
+        // Preferred backend URL (change for development/production)
+        static var currentBackendURL: String {
+            #if DEBUG
+            return localBackendURL // Use local for development
+            #else
+            return backendURL // Use production for release
+            #endif
+        }
+    }
+    
+    // MARK: - Voice Configuration
+    struct Voice {
+        // ElevenLabs voice settings
+        static let defaultVoiceId = "21m00Tcm4TlvDq8ikWAM" // Rachel (English)
+        static let ukrainianVoiceId = "pNInz6obpgDQGcFmaJgB" // Adam (multilingual)
+        
+        // Speech recognition settings
+        static let defaultLanguage = "uk-UA"
+        static let silenceThreshold: Double = 1.5
+        static let minimumAudioLevel: Float = -40.0
+        
+        // Voice quality settings
+        struct ElevenLabsSettings {
+            static let stability: Double = 0.5
+            static let similarityBoost: Double = 0.75
+            static let style: Double = 0.5
+            static let useSpeakerBoost = true
+            static let modelId = "eleven_multilingual_v2"
+        }
+        
+        // System TTS fallback settings
+        struct SystemTTS {
+            static let rate: Float = 0.5
+            static let ukrainianRate: Float = 0.45
+            static let pitchMultiplier: Float = 1.1
+            static let volume: Float = 0.8
+        }
+    }
+    
+    // MARK: - App Settings
+    struct App {
+        static let smartModeEnabled = true
+        static let autoSendEnabled = true
+        static let feedbackEnabled = true
+        
+        // UI Configuration
+        static let primaryColor = "systemBlue"
+        static let recordingColor = "systemRed"
+        static let processingColor = "systemOrange"
+    }
+    
+    // MARK: - Development Flags
+    struct Debug {
+        static let enableVoiceLogging = true
+        static let enableNetworkLogging = true
+        static let enableAnalytics = false
+        static let showDebugInfo = false
+    }
+}
+
+// MARK: - Configuration Extensions
+extension AppConfiguration {
+    
+    /// Check if ElevenLabs is properly configured
+    static var isElevenLabsConfigured: Bool {
+        return !API.elevenLabsAPIKey.isEmpty && 
+               API.elevenLabsAPIKey != "YOUR_ELEVENLABS_API_KEY"
+    }
+    
+    /// Get voice ID based on language
+    static func voiceId(for language: String) -> String {
+        if language.starts(with: "uk") {
+            return Voice.ukrainianVoiceId
+        }
+        return Voice.defaultVoiceId
+    }
+    
+    /// Log configuration status
+    static func logConfigurationStatus() {
+        print("🔧 App Configuration Status:")
+        print("   Backend URL: \(API.currentBackendURL)")
+        print("   ElevenLabs configured: \(isElevenLabsConfigured)")
+        print("   Smart mode: \(App.smartModeEnabled)")
+        print("   Debug mode: \(Debug.enableVoiceLogging)")
+    }
+} 
